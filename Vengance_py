@@ -1,0 +1,172 @@
+import pyscreenshot as ImageGrab
+from PIL import Image 
+import win32api
+import time 
+import mss
+import mss.tools
+import numpy as np
+import pyautogui
+import warnings
+import cv2
+import random
+import pyttsx3
+
+path="C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/"
+method = cv2.TM_CCOEFF_NORMED
+# filter warnings
+warnings.filterwarnings('ignore')
+
+
+def Random():
+    r1 = random.uniform(0, 0.1)
+    return round(r1, 2)
+
+
+def Aura():
+    pyautogui.press('9')
+def Spike():
+    pyautogui.press('8')
+def Fructure():
+    pyautogui.press('2')
+def Cleave():
+    pyautogui.press('6')
+def Bomb():
+    pyautogui.press('5')
+
+
+engine = pyttsx3.init()    
+engine.setProperty('rate', 200)  # Speed of speech
+engine.setProperty('volume', 0.5)  # Volume (0.0 to 1.0)
+
+
+
+a=win32api.GetKeyState(192)
+b=a
+
+
+aura = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Aura.png"))
+spike = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Dspikes.png"))
+cleave = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Cleave.png"))
+fracture = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Fracture.png"))
+sbomb = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Sbomb.png"))
+aoe = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Aoe.png"))
+spike_buff = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Dspikes_buff.png"))
+devistation = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Fdevistation.png"))
+combat = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Combat.png"))
+hp = np.array(Image.open("C:/Users/erenm/OneDrive/Masaüstü/wow_Rotation _Bot/Images/Hp_low.png"))
+
+
+
+state = 2
+state_ =2
+
+engine.say("Press tilda button to start vengance bot")
+engine.runAndWait()
+
+while True:
+    time.sleep(Random())
+    a=win32api.GetKeyState(192)
+    
+    if state==1 and state_==2:
+        engine.say("bot is activated")
+        engine.runAndWait()
+    elif state==2 and state_==1:
+        engine.say("bot is deeeactivated")
+        engine.runAndWait()
+        
+    state_=state
+    
+
+    if b != a:
+        state=1
+        # main code here
+        # Define the regions to capture
+        regions = [
+            {"left": 11, "top": 10, "width": 29, "height": 29},
+            {"left": 45, "top": 10, "width": 28, "height": 28},
+            {"left": 78, "top": 10, "width": 28, "height": 28},
+            {"left": 114, "top": 11, "width": 23, "height": 29},
+            {"left": 143, "top": 12, "width": 29, "height": 29},
+            {"left": 12, "top": 41, "width": 28, "height": 29},
+            {"left": 44, "top": 41, "width": 29, "height": 29},
+            {"left": 77, "top": 41, "width": 28, "height": 30},
+            {"left": 109, "top": 41, "width": 29, "height": 29},
+            {"left": 143, "top": 44, "width": 29, "height": 29}
+        ]
+        
+        captured_images = []
+        
+        
+        with mss.mss() as sct:
+            for i, region in enumerate(regions):
+                # Capture a screenshot of the specified region
+                screenshot = sct.grab(region)
+        
+                # Convert the screenshot to a NumPy array without the alpha channel
+                img_array = np.array(screenshot.pixels, dtype=np.uint8)[:,:,:3]
+        
+                # Append the image array to the list
+                captured_images.append(img_array)
+                
+        Cfracture= captured_images[0]
+        Ccleave= captured_images[1]
+        Csbomb=  captured_images[2]
+        Caoe=  captured_images[3]
+        Ccombat=  captured_images[4]
+        Cspike= captured_images[5]
+        Caura= captured_images[6]
+        Cspike_buff= captured_images[7]
+        Cfdevistation=  captured_images[8]
+        Chp=  captured_images[9]
+        
+
+
+
+        Rfracture = cv2.matchTemplate(fracture, Cfracture, method)
+        Rcleave = cv2.matchTemplate(cleave, Ccleave, method)
+        Rsbomb = cv2.matchTemplate(sbomb, Csbomb, method)
+        Raoe = cv2.matchTemplate(aoe, Caoe, method)
+        Rcombat = cv2.matchTemplate(combat, Ccombat, method)
+        Rspike = cv2.matchTemplate(spike, Cspike, method)
+        Raura = cv2.matchTemplate(aura, Caura, method)
+        Rspike_buff = cv2.matchTemplate(spike_buff, Cspike_buff, method)
+        Rfdevistation = cv2.matchTemplate(devistation, Cfdevistation, method)
+        Chp = cv2.matchTemplate(hp, Chp, method)
+        
+        if Rcombat >0.65:
+            if Rfdevistation <0.65:
+                if Chp >0.7:
+                    if Rfracture>0.5:
+                        print("fracture used")
+                        Fructure()
+                    elif Rspike>0.7 and Rspike_buff < 0.5:
+                        print("spike used")
+                        Spike()
+                    elif Raura>0.7:
+                        print("aura used")
+                        Aura()
+                else:
+                    if Rspike>0.7 and Rspike_buff < 0.5:
+                        print("spike used")
+                        Spike()
+                    elif Raura>0.7:
+                        print("aura used")
+                        Aura()
+                    elif Raoe>0.7 and Rsbomb>0.7:
+                        print("bomb used")
+                        Bomb()
+                    elif Rcleave> 0.7 and Raoe<0.7 :
+                        print("cleave used")
+                        Cleave()
+                    elif Rfracture>0.5:
+                        print("fracture used")
+                        Fructure()
+                    
+        
+    else:
+        state=2
+        
+        
+    
+                    
+    
